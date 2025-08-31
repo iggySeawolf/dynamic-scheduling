@@ -2,7 +2,6 @@ package xyz.iggy.dynamic_scheduling.runtime_scheduling;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
@@ -58,13 +57,19 @@ public class DynamicSchedulerService {
     /**
      * Check if job exists
      */
-    public boolean hasJob(String jobId) {
+    public boolean hasJob(Long jobId) {
         return runningJobs.containsKey(jobId);
+    }
+
+    private void stopAllScheduledFutures(){
+        runningJobs.values().forEach(future -> future.cancel(false));
+        runningJobs.clear();
     }
 
     @Scheduled(cron = "*/10 * * * * *")
     private void syncJobsWithDatabase(){
         log.info("Hitting DB for new jobs.");
+        stopAllScheduledFutures();
         scheduledReportRepository.findByScheduledTrue()
                 .forEach(scheduledReport ->
                         updateJob(
