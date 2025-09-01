@@ -28,11 +28,6 @@ public class ScheduledReport {
         LAST_CALENDAR_MONTH
     }
 
-//    @Override
-//    public String toString(){
-//        return "id=" + this.reportId;
-//    }
-
     @Override
     public String toString(){
         return "id=" + this.reportId + ", emailSubject=" + this.emailSubject;
