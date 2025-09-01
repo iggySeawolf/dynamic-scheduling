@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 @RestController
 @RequestMapping("/jobs")
@@ -25,7 +26,7 @@ public class JobController {
 //        return "Job " + id + " scheduled with cron " + cron;
 //    }
     @GetMapping
-    public Map<?,?> getJobs(){
+    public Map<Long, ScheduledFuture<?>> getJobs(){
         return dynamicSchedulerService.getJobs();
     }
 

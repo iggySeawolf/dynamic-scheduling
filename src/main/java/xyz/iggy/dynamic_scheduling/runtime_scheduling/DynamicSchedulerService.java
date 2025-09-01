@@ -23,7 +23,7 @@ public class DynamicSchedulerService {
     private final Map<Long, ScheduledFuture<?>> runningJobs = new ConcurrentHashMap<>();
     private final ScheduledReportRepository scheduledReportRepository;
 
-    public Map<?,?> getJobs(){
+    public Map<Long,ScheduledFuture<?>> getJobs(){
         return runningJobs;
     }
 
@@ -73,17 +73,16 @@ public class DynamicSchedulerService {
         log.info("Hitting DB for new jobs.");
         stopAllScheduledFutures();
         List<ScheduledReport> byScheduledTrue = scheduledReportRepository.findByScheduledTrue();
-        byScheduledTrue
-                .forEach(scheduledReport ->
-                        updateJob(
+        byScheduledTrue.forEach(scheduledReport ->
+                updateJob(
+                        scheduledReport.getReportId(),
+                        () -> log.info("Emailing sr.id=[{}] with subject=[{}] to recipients=[{}]",
                                 scheduledReport.getReportId(),
-                                () -> log.info("Emailing sr.id=[{}] with subject=[{}] to recipients=[{}]",
-                                        scheduledReport.getReportId(),
-                                        scheduledReport.getEmailSubject(),
-                                        scheduledReport.getListOfEmailRecipients()),
-                                scheduledReport.getCronExpression()
-                        )
-                );
+                                scheduledReport.getEmailSubject(),
+                                scheduledReport.getListOfEmailRecipients()),
+                        scheduledReport.getCronExpression()
+                )
+        );
         if (byScheduledTrue.isEmpty()) {
             log.info("No scheduled jobs found.");
         } else {
