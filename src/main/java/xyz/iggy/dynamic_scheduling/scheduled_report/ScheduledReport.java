@@ -15,8 +15,28 @@ public class ScheduledReport {
     @Convert(converter = StringListConverter.class)
     private List<String> listOfEmailRecipients;
     private String emailSubject;
+    //email send time
     private String cronExpression;
     private boolean scheduled;
+    @Enumerated(EnumType.STRING)
+    private Frequency frequency;
+
+    enum Frequency{
+        LAST_24_HOURS,
+        YESTERDAY,
+        LAST_CALENDAR_WEEK,
+        LAST_CALENDAR_MONTH
+    }
+
+//    @Override
+//    public String toString(){
+//        return "id=" + this.reportId;
+//    }
+
+    @Override
+    public String toString(){
+        return "id=" + this.reportId + ", emailSubject=" + this.emailSubject;
+    }
 }
 
 

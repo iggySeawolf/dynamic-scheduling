@@ -6,8 +6,10 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
+import xyz.iggy.dynamic_scheduling.scheduled_report.ScheduledReport;
 import xyz.iggy.dynamic_scheduling.scheduled_report.ScheduledReportRepository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -70,7 +72,8 @@ public class DynamicSchedulerService {
     private void syncJobsWithDatabase(){
         log.info("Hitting DB for new jobs.");
         stopAllScheduledFutures();
-        scheduledReportRepository.findByScheduledTrue()
+        List<ScheduledReport> byScheduledTrue = scheduledReportRepository.findByScheduledTrue();
+        byScheduledTrue
                 .forEach(scheduledReport ->
                         updateJob(
                                 scheduledReport.getReportId(),
@@ -81,6 +84,15 @@ public class DynamicSchedulerService {
                                 scheduledReport.getCronExpression()
                         )
                 );
+        if (byScheduledTrue.isEmpty()) {
+            log.info("No scheduled jobs found.");
+        } else {
+            log.info("Found {} active reports. content = {}", byScheduledTrue.size(), byScheduledTrue);
+        }
+
     }
+
+
+
 }
 
